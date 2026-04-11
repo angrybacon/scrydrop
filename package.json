@@ -1,6 +1,6 @@
 {
   "bin": {
-    "scrydrop": "./dist/scrydrop.js"
+    "scrydrop": "./dist/scrydrop.mjs"
   },
   "engines": {
     "node": ">=24.14.1"
