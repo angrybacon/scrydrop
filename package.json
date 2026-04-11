@@ -5,9 +5,6 @@
   "engines": {
     "node": ">=24.14.1"
   },
-  "files": [
-    "dist/"
-  ],
   "license": "MIT",
   "name": "@korumite/scrydrop",
   "publishConfig": {

@@ -2,7 +2,7 @@ import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   clean: true,
-  entry: { server: 'server/index.ts' },
+  entry: { scrydrop: 'server/index.ts' },
   format: ['esm'],
   outDir: 'dist',
   treeshake: true,
