@@ -1,0 +1,18 @@
+inputs:
+  node-version:
+    description: 'Node version to use'
+    required: false
+
+runs:
+  steps:
+    - uses: pnpm/action-setup@v5
+      with:
+        version: latest
+    - uses: actions/setup-node@v6
+      with:
+        cache: pnpm
+        node-version: ${{ inputs.node-version }}
+        node-version-file: ${{ inputs.node-version && '' || 'package.json' }}
+    - shell: bash
+      run: pnpm install --frozen-lockfile
+  using: composite

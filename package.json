@@ -1,0 +1,40 @@
+{
+  "bin": {
+    "scrydrop": "./dist/scrydrop.js"
+  },
+  "engines": {
+    "node": ">=24.14.1"
+  },
+  "license": "MIT",
+  "name": "@korumite/scrydrop",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/angrybacon/scrydrop.git"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsdown",
+    "lint": "pnpm run --aggregate-output '/^lint:[^:]+$/'",
+    "lint:format": "prettier --check --log-level warn server/",
+    "lint:prune": "knip",
+    "lint:typings": "tsc",
+    "start": "tsx ./server"
+  },
+  "dependencies": {
+    "async-sema": "3.1.1"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "4.7.1",
+    "@korumite/ts": "1.4.0",
+    "@types/node": "24.12.2",
+    "commander": "14.0.3",
+    "knip": "6.4.0",
+    "prettier": "3.8.2",
+    "tsdown": "0.21.7",
+    "tsx": "4.21.0",
+    "typescript": "6.0.2"
+  }
+}
