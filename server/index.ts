@@ -10,7 +10,7 @@ const { debug, host, port, rate } = program
   .addOption(new Option('--debug').default(false).env('DEBUG'))
   .addOption(new Option('--host <address>').default('127.0.0.1').env('HOST'))
   .addOption(new Option('--port <number>').default('3333').env('PORT'))
-  .addOption(new Option('--rate <rps>').default('2').env('RATE'))
+  .addOption(new Option('--rate <rps>').default('1').env('RATE'))
   .parse()
   .opts();
 
