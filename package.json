@@ -5,6 +5,12 @@
   "engines": {
     "node": ">=24.14.1"
   },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.mts"
+    }
+  },
   "license": "MIT",
   "name": "@korumite/scrydrop",
   "publishConfig": {
@@ -18,13 +24,15 @@
   "scripts": {
     "build": "tsdown",
     "lint": "pnpm run --aggregate-output '/^lint:[^:]+$/'",
-    "lint:format": "prettier --check --log-level warn server/",
+    "lint:format": "prettier --check --log-level warn lib/ server/",
     "lint:prune": "knip",
     "lint:typings": "tsc",
     "start": "tsx ./server"
   },
   "dependencies": {
-    "async-sema": "3.1.1"
+    "async-sema": "3.1.1",
+    "plaiceholder": "3.0.0",
+    "zod": "4.3.6"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
