@@ -39,9 +39,9 @@
     "@korumite/ts": "1.4.0",
     "@types/node": "24.12.2",
     "commander": "14.0.3",
-    "knip": "6.4.0",
+    "knip": "6.4.1",
     "prettier": "3.8.2",
-    "tsdown": "0.21.7",
+    "tsdown": "0.21.8",
     "tsx": "4.21.0",
     "typescript": "6.0.2"
   }
