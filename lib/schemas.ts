@@ -65,8 +65,10 @@ export const ScryCardSchema = z.object({
   artist: ScryFaceSchema.shape.artist,
   card_faces: z.array(ScryFaceSchema).nullish(),
   color_identity: z
-    .array(z.enum(['B', 'G', 'R', 'U', 'W']))
-    .transform((colors) => colors.map((color) => color.toLowerCase()).sort()),
+    .literal(['B', 'G', 'R', 'U', 'W'])
+    .array()
+    .transform((it) => it.map((c) => c.toLowerCase() as Lowercase<typeof c>))
+    .transform((it) => it.sort()),
   content_warning: z.boolean().nullish(),
   flavor_text: ScryFaceSchema.shape.flavor_text,
   id: z.uuid(),
