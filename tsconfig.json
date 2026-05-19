@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "moduleResolution": "bundler",
-    "noEmit": true,
-    "types": ["node"]
+    "noEmit": true
   },
   "extends": "./node_modules/@korumite/ts/tsconfig.nodom.json"
 }
