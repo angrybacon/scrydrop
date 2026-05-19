@@ -3,7 +3,7 @@
     "scrydrop": "./dist/scrydrop.mjs"
   },
   "engines": {
-    "node": ">=24.14.1"
+    "node": ">=20"
   },
   "exports": {
     ".": {

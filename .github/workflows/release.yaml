@@ -19,6 +19,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Install dependencies
         uses: ./.github/actions/setup
+        with:
+          node-version: 24
       - name: Run lint tasks
         run: pnpm lint
 
@@ -32,6 +34,8 @@ jobs:
         uses: actions/checkout@v6
       - name: Install dependencies
         uses: ./.github/actions/setup
+        with:
+          node-version: 24
       - name: Run build
         run: pnpm build
       - name: Deploy semantic release
