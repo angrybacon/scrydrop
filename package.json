@@ -3,7 +3,7 @@
     "scrydrop": "./dist/scrydrop.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "exports": {
     ".": {
@@ -41,7 +41,7 @@
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@korumite/ts": "1.5.0",
-    "@types/node": "25.9.0",
+    "@types/node": "25.9.1",
     "commander": "14.0.3",
     "knip": "6.14.1",
     "prettier": "3.8.3",

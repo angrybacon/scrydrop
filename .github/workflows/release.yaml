@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/setup
         with:
-          node-version: 24
+          node-version: 26
       - name: Run lint tasks
         run: pnpm lint
 
@@ -35,7 +35,7 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/setup
         with:
-          node-version: 24
+          node-version: 26
       - name: Run build
         run: pnpm build
       - name: Deploy semantic release
