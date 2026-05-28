@@ -20,13 +20,19 @@ const limit = RateLimit(Number.parseInt(rate), { uniformDistribution: true });
 createServer(async (request, response) => {
   if (!request.url) return;
   if (!CACHE.has(request.url)) {
-    await limit();
-    const promise = fetch(`${API}${request.url}`).then(async (it) => {
-      if (it.ok) return it.text();
-      const error = await it.text();
-      console.error(`Error while fetching "${request.url}"`, error);
-      throw new Error(it.statusText);
-    });
+    const promise = limit()
+      .then(() =>
+        fetch(`${API}${request.url}`, {
+          headers: { Accept: '*/*', 'User-Agent': 'scrydrop/1.5.0' },
+        }),
+      )
+      .then(async (it) => {
+        if (it.ok) return it.text();
+        const error = await it.text();
+        console.error(`Error while fetching "${request.url}"`, error);
+        throw new Error(it.statusText);
+      });
+    promise.catch(() => request.url && CACHE.delete(request.url));
     CACHE.set(request.url, promise);
     if (debug) console.info(`Caching for "${request.url}"`);
   }
