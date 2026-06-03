@@ -35,7 +35,8 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/setup
         with:
-          node-version: 26
+          # NOTE See https://github.com/semantic-release/github/issues/1242
+          node-version: 24
       - name: Run build
         run: pnpm build
       - name: Deploy semantic release
