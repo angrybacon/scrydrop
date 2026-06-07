@@ -1,12 +1,15 @@
+import type {
+  ScryCountResponse,
+  ScrySearchResponse,
+  ScrySingleResponse,
+} from './schemas';
+
 import { getPlaiceholder } from 'plaiceholder';
 
 import {
   ScryCountResponseSchema,
   ScrySearchResponseSchema,
   ScrySingleResponseSchema,
-  type ScryCountResponse,
-  type ScrySearchResponse,
-  type ScrySingleResponse,
 } from './schemas';
 
 /**

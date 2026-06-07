@@ -23,7 +23,7 @@ createServer(async (request, response) => {
     const promise = limit()
       .then(() =>
         fetch(`${API}${request.url}`, {
-          headers: { Accept: '*/*', 'User-Agent': 'scrydrop/1.5.0' },
+          headers: { Accept: '*/*', 'User-Agent': 'scrydrop/1.7.0' },
         }),
       )
       .then(async (it) => {
@@ -34,7 +34,7 @@ createServer(async (request, response) => {
       });
     promise.catch(() => request.url && CACHE.delete(request.url));
     CACHE.set(request.url, promise);
-    if (debug) console.info(`Caching for "${request.url}"`);
+    if (debug) console.info(`Cached #${CACHE.size} "${request.url}"`);
   }
   try {
     const data = await CACHE.get(request.url);

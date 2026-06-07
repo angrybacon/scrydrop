@@ -2,33 +2,34 @@ import * as z from 'zod';
 
 // NOTE Someday Scryfall will provide production-ready typings for their API
 //      currently documented here <https://scryfall.com/docs/api/cards>.
+//
 //      You can track progress here <https://github.com/scryfall/api-types>.
 
 const formatAlternate = (
-  options: Pick<z.infer<typeof ScryCardSchema>, 'artist' | 'name' | 'set_name'>,
+  input: Pick<z.infer<typeof ScryCardSchema>, 'artist' | 'name' | 'set_name'>,
 ) => [
-  `"${options.name}" from ${options.set_name}`,
-  ...(options.artist ? [`Art by ${options.artist}`] : []),
+  `"${input.name}" from ${input.set_name}`,
+  ...(input.artist ? [`Art by ${input.artist}`] : []),
 ];
 
-const formatFaces = (card: z.infer<typeof ScryCardSchema>) => {
-  const { card_faces, printed_name, ...rest } = {
-    ...card,
+const formatFaces = (input: z.infer<typeof ScryCardSchema>) => {
+  const { card_faces, printed_name, ...card } = {
+    ...input,
     // NOTE Warm up a property to contain the LQIP data URLs when necessary
     lqip: undefined as { art: string; card: string } | undefined,
-    name: card.printed_name || card.name,
+    name: input.printed_name ?? input.name,
   };
-  if (!card_faces?.[0]) return [{ ...rest, alternate: formatAlternate(rest) }];
+  if (!card_faces?.[0]) return [{ ...card, alternate: formatAlternate(card) }];
   return card_faces.map(({ name, object, printed_name, ...face }, index) => ({
-    ...rest,
+    ...card,
     ...face,
     alternate: formatAlternate({
-      ...rest,
+      ...card,
       ...face,
-      name: printed_name || name,
+      name: printed_name ?? name,
     }),
-    id: `${rest.id}-${index}`,
-    name: printed_name || name,
+    id: `${card.id}-${index}`,
+    name: printed_name ?? name,
   }));
 };
 
