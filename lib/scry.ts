@@ -91,7 +91,9 @@ export const Scry = (configuration: { host: string; port?: string }) => {
       const response = await fetch(`${url}?${parameters}`);
       if (!response.ok) throw new Error(await response.text());
       return ScrySearchResponseSchema.transform(async (cards) => {
-        if (options?.lqip) await Promise.all(cards.map(makePlaceholders));
+        if (options?.lqip) {
+          await Promise.all(cards.map((card) => makePlaceholders(card)));
+        }
         return cards;
       }).parseAsync(await response.json());
     },

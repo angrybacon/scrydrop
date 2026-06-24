@@ -29,10 +29,14 @@
   "scripts": {
     "build": "tsdown",
     "lint": "pnpm run '/^lint:[^:]+$/'",
+    "lint:code": "oxlint",
     "lint:format": "prettier --check --log-level warn lib/ server/",
     "lint:prune": "knip",
     "lint:typings": "tsc",
-    "start": "tsx ./server"
+    "start": "tsx ./server",
+    "test": "vitest run",
+    "test:coverage": "pnpm run test --coverage",
+    "test:watch": "pnpm run test --watch"
   },
   "dependencies": {
     "async-sema": "3.1.1",
@@ -42,12 +46,16 @@
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@korumite/ts": "1.6.0",
-    "@types/node": "25.9.2",
+    "@types/node": "26.0.0",
+    "@vitest/coverage-v8": "4.1.9",
     "commander": "15.0.0",
-    "knip": "6.16.0",
-    "prettier": "3.8.3",
-    "tsdown": "0.22.2",
+    "knip": "6.18.0",
+    "oxlint": "1.71.0",
+    "oxlint-tsgolint": "0.23.0",
+    "prettier": "3.8.4",
+    "tsdown": "0.22.3",
     "tsx": "4.22.4",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vitest": "4.1.9"
   }
 }

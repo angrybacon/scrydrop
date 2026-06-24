@@ -13,24 +13,29 @@ const formatAlternate = (
 ];
 
 const formatFaces = (input: z.infer<typeof ScryCardSchema>) => {
-  const { card_faces, printed_name, ...card } = {
+  const {
+    card_faces,
+    printed_name: _printed_name,
+    ...card
+  } = {
     ...input,
     // NOTE Warm up a property to contain the LQIP data URLs when necessary
     lqip: undefined as { art: string; card: string } | undefined,
     name: input.printed_name ?? input.name,
   };
   if (!card_faces?.[0]) return [{ ...card, alternate: formatAlternate(card) }];
-  return card_faces.map(({ name, object, printed_name, ...face }, index) => ({
-    ...card,
-    ...face,
-    alternate: formatAlternate({
-      ...card,
-      ...face,
-      name: printed_name ?? name,
-    }),
-    id: `${card.id}-${index}`,
-    name: printed_name ?? name,
-  }));
+  return card_faces.map(
+    ({ name, object: _object, printed_name, ...face }, index) =>
+      Object.assign({}, card, face, {
+        alternate: formatAlternate({
+          artist: face.artist ?? card.artist,
+          name: printed_name ?? name,
+          set_name: card.set_name,
+        }),
+        id: `${card.id}-${index}`,
+        name: printed_name ?? name,
+      }),
+  );
 };
 
 export const ScryFaceSchema = z.object({
@@ -64,10 +69,11 @@ export const ScryFaceSchema = z.object({
 
 export const ScryCardSchema = z.object({
   artist: ScryFaceSchema.shape.artist,
-  card_faces: z.array(ScryFaceSchema).nullish(),
+  card_faces: ScryFaceSchema.array().nullish(),
   color_identity: z
     .literal(['B', 'G', 'R', 'U', 'W'])
     .array()
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     .transform((it) => it.map((c) => c.toLowerCase() as Lowercase<typeof c>))
     .transform((it) => it.sort()),
   content_warning: z.boolean().nullish(),
@@ -111,12 +117,12 @@ export const ScryCardSchema = z.object({
 });
 
 export const ScryListSchema = z.object({
-  data: z.array(ScryCardSchema),
+  data: ScryCardSchema.array(),
   has_more: z.boolean(),
   next_page: z.url().nullish(),
   object: z.literal('list'),
   total_cards: z.number().nullish(),
-  warnings: z.array(z.string()).nullish(),
+  warnings: z.string().array().nullish(),
 });
 
 export const ScryCountResponseSchema = ScryListSchema.transform(

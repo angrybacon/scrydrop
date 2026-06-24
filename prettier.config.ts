@@ -4,6 +4,7 @@ export default {
   importOrder: [
     '<TYPES>',
     '<TYPES>^~/',
+    '<TYPES>[.]',
     '',
     '<BUILTIN_MODULES>',
     '<THIRD_PARTY_MODULES>',

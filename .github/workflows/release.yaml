@@ -22,10 +22,30 @@ jobs:
       - name: Run lint tasks
         run: pnpm lint
 
+  tests:
+    name: Node ${{ matrix.node }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: [22, 24, 26]
+        os: [macos-latest, ubuntu-latest]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Install dependencies
+        uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Run tests
+        run: pnpm test:coverage
+      - name: Report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
+
   publish:
     name: Publish
     if: ${{ github.ref == 'refs/heads/master' }}
-    needs: lint
+    needs: [lint, tests]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
