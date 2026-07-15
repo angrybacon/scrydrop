@@ -22,12 +22,15 @@ const API = {
   SET: '/cards',
 } as const;
 
-const makePlaceholders = async (faces: ScrySingleResponse) => {
+const makePlaceholders = async (
+  faces: ScrySingleResponse,
+  headers: Record<string, string>,
+) => {
   const [first] = faces;
   if (first?.image_uris) {
     const [art, card] = await Promise.all([
-      (await fetch(first.image_uris.art_crop)).arrayBuffer(),
-      (await fetch(first.image_uris.small)).arrayBuffer(),
+      (await fetch(first.image_uris.art_crop, { headers })).arrayBuffer(),
+      (await fetch(first.image_uris.small, { headers })).arrayBuffer(),
     ]);
     first.lqip = {
       art: (await getPlaiceholder(Buffer.from(art), { size: 32 })).base64,
@@ -43,13 +46,23 @@ const makePlaceholders = async (faces: ScrySingleResponse) => {
  * Use HOST and the optional PORT to target a specific API. This is useful when
  * hitting a cache server for instance.
  *
+ * The USER string is required and will be forwarded to all `fetch` calls as the
+ * request `User-Agent` header.
+ *
  * Some methods will support the LQIP option to generate _low quality image
  * placeholders_ for the results. This is useful for UIs where the client might
  * need a very lightweight and preliminary version of the imagery in order to
  * prevent CLS issues.
  */
-export const Scry = (configuration: { host: string; port?: string }) => {
+export const Scry = (configuration: {
+  host: string;
+  port?: string;
+  /** The User-Agent identifier to use for all inner fetches */
+  user: string;
+}) => {
   const base = [configuration.host, configuration.port].join(':');
+  const headers = { 'User-Agent': configuration.user };
+
   return {
     /**
      * Count results for QUERY.
@@ -63,7 +76,7 @@ export const Scry = (configuration: { host: string; port?: string }) => {
         q: query.trim().toLowerCase(),
         unique: 'cards',
       }).toString();
-      const response = await fetch(`${url}?${parameters}`);
+      const response = await fetch(`${url}?${parameters}`, { headers });
       if (!response.ok) throw new Error(await response.text());
       return ScryCountResponseSchema.parse(await response.json());
     },
@@ -88,11 +101,13 @@ export const Scry = (configuration: { host: string; port?: string }) => {
         q: query.trim().toLowerCase(),
         unique: 'cards',
       }).toString();
-      const response = await fetch(`${url}?${parameters}`);
+      const response = await fetch(`${url}?${parameters}`, { headers });
       if (!response.ok) throw new Error(await response.text());
       return ScrySearchResponseSchema.transform(async (cards) => {
         if (options?.lqip) {
-          await Promise.all(cards.map((card) => makePlaceholders(card)));
+          await Promise.all(
+            cards.map((card) => makePlaceholders(card, headers)),
+          );
         }
         return cards;
       }).parseAsync(await response.json());
@@ -132,10 +147,10 @@ export const Scry = (configuration: { host: string; port?: string }) => {
         }).toString();
         url = new URL(API.SEARCH, base).toString();
       }
-      const response = await fetch(`${url}?${parameters}`);
+      const response = await fetch(`${url}?${parameters}`, { headers });
       if (!response.ok) throw new Error(await response.text());
       return ScrySingleResponseSchema.transform(async (faces) => {
-        if (options?.lqip) await makePlaceholders(faces);
+        if (options?.lqip) await makePlaceholders(faces, headers);
         return faces;
       }).parseAsync(await response.json());
     },
