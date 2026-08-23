@@ -42,7 +42,9 @@ const { debug, greedy, host, port, rate } = program
   }>();
 
 // NOTE See <https://scryfall.com/docs/api> for more details on the rate limit
-const limit = RateLimit(Math.trunc(Number(rate)));
+const limit = RateLimit(Math.trunc(Number(rate)), {
+  uniformDistribution: true,
+});
 
 const { enqueue } = Batcher({
   debug,
