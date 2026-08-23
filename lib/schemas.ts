@@ -75,7 +75,7 @@ export const ScryCardSchema = z.object({
     .array()
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     .transform((it) => it.map((c) => c.toLowerCase() as Lowercase<typeof c>))
-    .transform((it) => it.sort()),
+    .transform((it) => it.toSorted()),
   content_warning: z.boolean().nullish(),
   flavor_text: ScryFaceSchema.shape.flavor_text,
   id: z.uuid(),

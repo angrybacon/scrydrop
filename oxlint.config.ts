@@ -24,6 +24,10 @@ export default defineConfig({
   ],
   rules: {
     'eslint/max-lines-per-function': 'off',
+    'eslint/no-unused-vars': [
+      'error',
+      { argsIgnorePattern: '^_', ignoreRestSiblings: true },
+    ],
     'typescript/no-confusing-void-expression': [
       'error',
       { ignoreArrowShorthand: true },
