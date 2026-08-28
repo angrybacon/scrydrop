@@ -16,7 +16,7 @@ import {
  * Endpoints to query for a specific card.
  * See <https://scryfall.com/docs/api/cards>.
  */
-const API = {
+const ENDPOINTS = {
   NAMED: '/cards/named',
   SEARCH: '/cards/search',
   SET: '/cards',
@@ -29,6 +29,7 @@ const makePlaceholders = async (
   const [first] = faces;
   if (first?.image_uris) {
     const [art, card] = await Promise.all([
+      // NOTE Not subject to the documented rate limits
       (await fetch(first.image_uris.art_crop, { headers })).arrayBuffer(),
       (await fetch(first.image_uris.small, { headers })).arrayBuffer(),
     ]);
@@ -43,8 +44,8 @@ const makePlaceholders = async (
 /**
  * Make a fetcher for Scryfall queries.
  *
- * Use HOST and the optional PORT to target a specific API. This is useful when
- * hitting a cache server for instance.
+ * Use HOST and the optional PORT to customize where the bulk export server
+ * runs.
  *
  * The USER string is required and will be forwarded to all `fetch` calls as the
  * request `User-Agent` header.
@@ -53,6 +54,8 @@ const makePlaceholders = async (
  * placeholders_ for the results. This is useful for UIs where the client might
  * need a very lightweight and preliminary version of the imagery in order to
  * prevent CLS issues.
+ *
+ * Queries are not normalized.
  */
 export const Scry = (configuration: {
   host: string;
@@ -60,20 +63,25 @@ export const Scry = (configuration: {
   /** The User-Agent identifier to use for all inner fetches */
   user: string;
 }) => {
-  const base = [configuration.host, configuration.port].join(':');
+  const api = {
+    bulk: [configuration.host, configuration.port].join(':'),
+    remote: 'https://api.scryfall.com',
+  };
   const headers = { 'User-Agent': configuration.user };
 
   return {
     /**
      * Count results for QUERY.
      *
+     * Does not use the bulk export server! This makes a real Scryfall API call.
+     *
      * Like search mode except less expensive for when all that matters is the
      * count of results that matched the QUERY.
      */
     count: async (query: string): Promise<ScryCountResponse> => {
-      const url = new URL(API.SEARCH, base).toString();
+      const url = new URL(ENDPOINTS.SEARCH, api.remote).toString();
       const parameters = new URLSearchParams({
-        q: query.trim().toLowerCase(),
+        q: query.trim(),
         unique: 'cards',
       }).toString();
       const response = await fetch(`${url}?${parameters}`, { headers });
@@ -83,6 +91,8 @@ export const Scry = (configuration: {
 
     /**
      * Search for QUERY.
+     *
+     * Does not use the bulk export server! This makes a real Scryfall API call.
      *
      * The QUERY should ressemble that of the regular usage through Scryfall's
      * website. This will always yield a list of results. Pagination will be
@@ -95,10 +105,10 @@ export const Scry = (configuration: {
       query: string,
       options?: { lqip?: boolean },
     ): Promise<ScrySearchResponse> => {
-      const url = new URL(API.SEARCH, base).toString();
+      const url = new URL(ENDPOINTS.SEARCH, api.remote).toString();
       const parameters = new URLSearchParams({
         order: 'released',
-        q: query.trim().toLowerCase(),
+        q: query.trim(),
         unique: 'cards',
       }).toString();
       const response = await fetch(`${url}?${parameters}`, { headers });
@@ -120,37 +130,44 @@ export const Scry = (configuration: {
      * separated by a `|`. Return the first result in case of multiple matches
      * and ignore pagination.
      *
+     * Use MODE to either request the bulk export server index, or the Scryfall
+     * API.
+     *
      * With optional LQIP, make the placeholder for the first face of the search
      * result.
      */
     single: async (
       query: string,
-      options?: { lqip?: boolean },
+      options: { lqip?: boolean; mode: 'bulk' | 'remote' },
     ): Promise<ScrySingleResponse> => {
-      const [name, set, number] = query
+      const [name = '', set = '', number = ''] = query
         .split('|')
-        .map((it) => it.trim().toLowerCase());
-      let parameters = '';
-      let url = '';
-      if (set && number) {
-        parameters = '';
-        url = new URL(`${API.SET}/${set}/${number}`, base).toString();
+        .map((it) => it.trim());
+      let url: URL;
+      const parameters = new URLSearchParams();
+      if (options.mode === 'bulk') {
+        url = new URL('', api.bulk);
+        parameters.set('name', name);
+        parameters.set('number', number);
+        parameters.set('set', set);
+      } else if (set && number) {
+        url = new URL(`${ENDPOINTS.SET}/${set}/${number}`, api.remote);
       } else if (set && name) {
-        parameters = new URLSearchParams({ exact: name, set }).toString();
-        url = new URL(API.NAMED, base).toString();
+        url = new URL(ENDPOINTS.NAMED, api.remote);
+        parameters.set('exact', name);
+        parameters.set('set', set);
       } else {
-        parameters = new URLSearchParams({
-          dir: 'asc',
-          order: 'released',
-          q: `!"${name}"`,
-          unique: 'prints',
-        }).toString();
-        url = new URL(API.SEARCH, base).toString();
+        url = new URL(ENDPOINTS.SEARCH, api.remote);
+        parameters.set('dir', 'asc');
+        parameters.set('order', 'released');
+        parameters.set('prefer', 'oldest');
+        parameters.set('q', `!"${name}"`);
       }
-      const response = await fetch(`${url}?${parameters}`, { headers });
+      url.search = parameters.toString();
+      const response = await fetch(url.toString(), { headers });
       if (!response.ok) throw new Error(await response.text());
       return ScrySingleResponseSchema.transform(async (faces) => {
-        if (options?.lqip) await makePlaceholders(faces, headers);
+        if (options.lqip) await makePlaceholders(faces, headers);
         return faces;
       }).parseAsync(await response.json());
     },

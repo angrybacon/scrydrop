@@ -1,28 +1,29 @@
 import * as z from 'zod';
 
 /**
- * A schema for the _batch_ endpoint.
+ * A schema for the bulk export metadata.
  *
- * We don't actually care about the actual shape of the cards because they will
- * be parsed in `Scry` anyway.
- *
- * See <https://scryfall.com/docs/api/cards/collection>
+ * See <https://scryfall.com/docs/api/bulk-data>.
  */
-export const ScryCollectionResponseSchema = z.object({
-  data: z.looseObject({ object: z.literal('card') }).array(),
-  not_found: z.unknown().array(),
-  object: z.literal('list'),
-});
+export const BulkSchema = z.object({ jsonl_download_uri: z.url() });
 
 /**
- * A schema for an error response.
+ * A single printing from a Scryfall bulk data card object.
  *
- * See <https://scryfall.com/docs/api/errors>
+ * Bulk data card objects share the same schema as the live API and the
+ * client-side `Scry` parsing already covers all relevant fields. Only the
+ * fields used for indexing and lookup are required here, everything else is
+ * passed through as-is.
+ *
+ * See <https://scryfall.com/docs/api/cards>.
  */
-export const ScryErrorResponseSchema = z.object({
-  code: z.string(),
-  details: z.string(),
-  status: z.number(),
-  type: z.string().nullish(),
-  warnings: z.string().array().nullish(),
+export const CardSchema = z.looseObject({
+  card_faces: z.looseObject({ name: z.string() }).array().optional(),
+  collector_number: z.string(),
+  name: z.string(),
+  object: z.literal('card'),
+  released_at: z.string(),
+  set: z.string(),
 });
+
+export type Card = z.infer<typeof CardSchema>;

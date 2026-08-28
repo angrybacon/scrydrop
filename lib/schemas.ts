@@ -91,6 +91,7 @@ export const ScryCardSchema = z.object({
     'double_faced_token',
     'emblem',
     'flip',
+    'front_card',
     'host',
     'leveler',
     'meld',

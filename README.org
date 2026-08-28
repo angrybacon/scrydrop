@@ -1,0 +1,23 @@
+#+TITLE: Scrydrop
+#+AUTHOR: Mathieu Marques
+
+Client library and CLI for querying Scryfall, either directly against the live
+API or against a locally-indexed bulk data export.
+
+* Library
+
+The ~Scry~ factory exposes methods to query Scryfall
+
+- ~count~ and ~search~ always hit the live Scryfall API
+- ~single~ takes a ~mode~ of either ~remote~ or ~bulk~
+
+
+* Server
+
+The CLI server is required to use ~single~ in /bulk/ mode
+
+1. =scrydrop pull= downloads and caches the latest Scryfall bulk data export
+1. =scrydrop server= starts a local HTTP server that resolves lookups against
+   the export indexed in memory and matched against incoming queries
+
+See =scrydrop --help=.
