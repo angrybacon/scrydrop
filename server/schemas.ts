@@ -20,6 +20,7 @@ export const BulkSchema = z.object({ jsonl_download_uri: z.url() });
 export const CardSchema = z.looseObject({
   card_faces: z.looseObject({ name: z.string() }).array().optional(),
   collector_number: z.string(),
+  layout: z.string().optional(),
   name: z.string(),
   object: z.literal('card'),
   released_at: z.string(),

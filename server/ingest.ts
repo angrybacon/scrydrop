@@ -59,6 +59,7 @@ export const ingest = async (path: string): Promise<Index> => {
     for await (const line of lines) {
       if (!line.trim()) continue;
       const card = CardSchema.parse(JSON.parse(line));
+      if (card.layout === 'art_series') continue;
       const [face] = card.card_faces ?? [];
       const names = [card.name, ...(face ? [face.name] : [])];
       for (const name of names) {

@@ -132,13 +132,11 @@ describe(ingest, () => {
     const index = await ingest(path);
     // Then
     expect(index).toEqual({
-      Brainstorm: Object.assign([one], {
-        ice: { [one.collector_number]: one },
-      }),
+      Brainstorm: Object.assign([one], { ice: { 55: one } }),
       Doomsday: Object.assign([five, two, three, four], {
-        sld: { [two.collector_number]: two, [three.collector_number]: three },
-        trk: { [four.collector_number]: four },
-        wth: { [five.collector_number]: five },
+        sld: { 1115: two, 1200: three },
+        trk: { 319: four },
+        wth: { 213: five },
       }),
     });
   });
@@ -188,6 +186,33 @@ describe(ingest, () => {
     await expect(test).rejects.toThrow('collector_number');
   });
 
+  it('should skip art series printings', async () => {
+    // Given
+    const one = {
+      collector_number: '12',
+      layout: 'art_series',
+      name: 'Mortify // Mortify',
+      object: 'card',
+      released_at: '2024-07-05',
+      set: 'aacr',
+    };
+    const two = {
+      collector_number: '269',
+      layout: 'normal',
+      name: 'Mortify',
+      object: 'card',
+      released_at: '2023-06-23',
+      set: 'ltc',
+    };
+    await write(one, two);
+    // When
+    const index = await ingest(path);
+    // Then
+    expect(index).toEqual({
+      Mortify: Object.assign([two], { ltc: { 269: two } }),
+    });
+  });
+
   it('should not let a name or set code collide with prototype properties', async () => {
     // Given
     const one = {
@@ -209,8 +234,8 @@ describe(ingest, () => {
     const index = await ingest(path);
     // Then
     expect(index).toEqual({
-      valueOf: Object.assign([one], { lea: { [one.collector_number]: one } }),
-      Shock: Object.assign([two], { map: { [two.collector_number]: two } }),
+      valueOf: Object.assign([one], { lea: { 21: one } }),
+      Shock: Object.assign([two], { map: { 22: two } }),
     });
   });
 
@@ -242,8 +267,7 @@ describe(ingest, () => {
     // When
     const index = await ingest(path);
     // Then
-    const card = Object.assign([one], { lea: { [one.collector_number]: one } });
-    expect(index['length']).toEqual(card);
+    expect(index['length']).toEqual(Object.assign([one], { lea: { 1: one } }));
   });
 
   describe('Double-faced cards', () => {
