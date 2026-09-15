@@ -7,5 +7,6 @@ export default defineConfig({
       reporter: ['json', 'json-summary', 'text'],
     },
     mockReset: true,
+    reporters: ['dot'],
   },
 });
