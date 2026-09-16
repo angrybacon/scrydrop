@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "name": "@korumite/scrydrop",
-  "packageManager": "pnpm@11.25.0",
+  "packageManager": "pnpm@11.27.0",
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -46,7 +46,7 @@
     "@ianvs/prettier-plugin-sort-imports": "4.7.1",
     "@korumite/ts": "1.7.0",
     "@types/node": "26.4.1",
-    "@vitest/coverage-v8": "5.0.0",
+    "@vitest/coverage-v8": "5.0.1",
     "commander": "15.0.0",
     "knip": "6.35.1",
     "oxlint": "1.83.0",
@@ -55,6 +55,6 @@
     "tsdown": "0.23.0",
     "tsx": "4.23.13",
     "typescript": "7.0.2",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   }
 }
